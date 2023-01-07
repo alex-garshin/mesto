@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Место</title>
+    <link rel="stylesheet" href="pages/index.css" />
+  </head>
+  <body class="body">
+    <div class="page">
+      <header class="header">
+        <img
+          class="header__logo"
+          src="./images/header-logo.png"
+          alt="логотип"
+        />
+      </header>
+      <main class="main">
+        <section class="profile">
+          <div class="profile__full">
+            <img class="profile__avatar" src="./images/avatar.png" alt="Фото" />
+            <div class="profile__info">
+              <div class="profile__content">
+                <h1 class="profile__name">Жак-Ив Кусто</h1>
+                <button class="profile__edit-button" type="button"></button>
+              </div>
+              <p class="profile__job">Исследователь океана</p>
+            </div>
+          </div>
+          <button class="profile__add-button" type="button"></button>
+        </section>
+        <section class="gallery">
+          <div class="gallery__card">
+            <img
+              src="./images/kirill-pershin-1088404-unsplash.png"
+              alt="Карачаевск"
+              class="gallery__pic"
+            />
+            <div class="gallery__content">
+              <p class="gallery__text">Карачаевск</p>
+              <button class="gallery__like" type="button"></button>
+            </div>
+          </div>
+          <div class="gallery__card">
+            <img
+              src="./images/kirill-pershin-1404681-unsplash.png"
+              alt="Эльбрус"
+              class="gallery__pic"
+            />
+            <div class="gallery__content">
+              <p class="gallery__text">Гора Эльбрус</p>
+              <button class="gallery__like" type="button"></button>
+            </div>
+          </div>
+          <div class="gallery__card">
+            <img
+              src="./images/kirill-pershin-1556355-unsplash.png"
+              alt="Домбай"
+              class="gallery__pic"
+            />
+            <div class="gallery__content">
+              <p class="gallery__text">Домбай</p>
+              <button class="gallery__like" type="button"></button>
+            </div>
+          </div>
+          <div class="gallery__card">
+            <img
+              src="./images/kirill-pershin-1404681-unsplash.png"
+              alt="Ельбрус"
+              class="gallery__pic"
+            />
+            <div class="gallery__content">
+              <p class="gallery__text">Гора Эльбрус</p>
+              <button class="gallery__like" type="button"></button>
+            </div>
+          </div>
+          <div class="gallery__card">
+            <img
+              src="./images/kirill-pershin-1556355-unsplash.png"
+              alt="Добмай"
+              class="gallery__pic"
+            />
+            <div class="gallery__content">
+              <p class="gallery__text">Домбай</p>
+              <button class="gallery__like" type="button"></button>
+            </div>
+          </div>
+          <div class="gallery__card">
+            <img
+              src="./images/kirill-pershin-1088404-unsplash.png"
+              alt="Карачаевск"
+              class="gallery__pic"
+            />
+            <div class="gallery__content">
+              <p class="gallery__text">Карачаево-Черкессия</p>
+              <button class="gallery__like" type="button"></button>
+            </div>
+          </div>
+        </section>
+      </main>
+      <footer class="footer">
+        <p class="footer__text">&copy 2022 Mesto Russia</p>
+      </footer>
+      <div class="popup">
+        <div class="popup__content">
+          <p class="popup__title">Редактировать профиль</p>
+          <button class="popup__close" type="button"></button>
+          <form class="popup__form" name="popup-form">
+            <input
+              class="popup__input popup__input_name"
+              type="text"
+              name="name"
+            />
+            <input
+              class="popup__input popup__input_job"
+              type="text"
+              name="job"
+            />
+            <button class="popup__button" type="submit">Сохранить</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <script src="scripts/script.js"></script>
+  </body>
+</html>
