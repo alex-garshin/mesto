@@ -54,6 +54,13 @@
 
 @import url(../blocks/gallery/__like/gallery__like.css);
 
+<<<<<<< HEAD
+@import url(../blocks/gallery/__delete/gallery__delete.css);
+
+@import url(../blocks/gallery/__like/_active/gallery__like_active.css);
+
+=======
+>>>>>>> origin/main
 /* footer */
 
 @import url(../blocks/footer/footer.css);
@@ -81,3 +88,24 @@
 @import url(../blocks/popup/__input/_click/popup__input_click_name);
 
 @import url(../blocks/popup/_opened/popup_opened.css);
+<<<<<<< HEAD
+
+@import url(../blocks/popup/__content-img/popup__content-img.css);
+
+@import url(../blocks/popup/_click/_card/popup_click_card.css);
+
+@import url(../blocks/popup/_click/_pic/popup_click_pic.css);
+
+@import url(../blocks/popup/_click/_prof/popup_click_prof.css);
+
+@import url(../blocks/popup/__img/popup__img.css);
+
+@import url(../blocks/popup/__close/_card/popup__close_card.css);
+
+@import url(../blocks/popup/__close/_img/popup__close_img.css);
+
+@import url(../blocks/popup/__close/_profile/popup__close_profile.css);
+
+@import url(../blocks/popup/__text/popup__text.css);
+=======
+>>>>>>> origin/main
