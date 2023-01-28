@@ -54,10 +54,13 @@
 
 @import url(../blocks/gallery/__like/gallery__like.css);
 
+<<<<<<< HEAD
 @import url(../blocks/gallery/__delete/gallery__delete.css);
 
 @import url(../blocks/gallery/__like/_active/gallery__like_active.css);
 
+=======
+>>>>>>> origin/main
 /* footer */
 
 @import url(../blocks/footer/footer.css);
@@ -85,6 +88,7 @@
 @import url(../blocks/popup/__input/_click/popup__input_click_name);
 
 @import url(../blocks/popup/_opened/popup_opened.css);
+<<<<<<< HEAD
 
 @import url(../blocks/popup/__content-img/popup__content-img.css);
 
@@ -103,3 +107,5 @@
 @import url(../blocks/popup/__close/_profile/popup__close_profile.css);
 
 @import url(../blocks/popup/__text/popup__text.css);
+=======
+>>>>>>> origin/main
