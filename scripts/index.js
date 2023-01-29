@@ -53,20 +53,20 @@ const openProf = () => {
   inputJob.value = profileJob.textContent.trim(); //присваивание значения
 };
 
-const closePopup = (popupClick) => {
-  popupClick.classList.remove("popup_opened");
+const closePopup = (clickPopup) => {
+  clickPopup.classList.remove("popup_opened");
 };
 
-const openPopup = (popupClick) => {
-  popupClick.classList.add("popup_opened");
+const openPopup = (clickPopup) => {
+  clickPopup.classList.add("popup_opened");
 };
 
 const processProfile = (event) => {
-  const popupClick = event.target.closest(".popup");
+  const clickPopup = event.target.closest(".popup");
   event.preventDefault(); //откат без изменений
   profileName.textContent = inputName.value; //редактирование
   profileJob.textContent = inputJob.value; //редактирование
-  closePopup(popupClick);
+  closePopup(clickPopup);
 };
 
 
@@ -80,7 +80,7 @@ const fillCard = (event) => {
   popupText.textContent = name;
 };
 
-const cardGenerate = (array) => {
+const generateCard = (array) => {
   const galleryCardArray = galleryArray
   .querySelector(".gallery__card")
   .cloneNode(true);
@@ -105,7 +105,7 @@ const likeImage = (event) => {
   event.target.classList.toggle("gallery__like_active");
 };
 
-const cardDisplay = (cardBox, cardItem, card = false) => {
+const displayCard = (cardBox, cardItem, card = false) => {
   if (card) {
   cardBox.prepend(cardItem);
   } else {
@@ -114,16 +114,17 @@ const cardDisplay = (cardBox, cardItem, card = false) => {
 };
 
 const processCard = (event) => {
-  const popupClick = event.target.closest(".popup");
+  const clickPopup = event.target.closest(".popup");
   event.preventDefault(); //откат без изменений
   if (inputNameImg.value !== "" && inputLink.value !== "") {
-  const cardСomplet = { name: inputNameImg.value, link: inputLink.value };
-  cardDisplay(gallery, cardGenerate(cardСomplet), true);
+  const completCard = { name: inputNameImg.value, link: inputLink.value };
+  displayCard(gallery, generateCard(completCard), true);
   }
-  closePopup(popupClick);
+  closePopup(clickPopup);
+  event.target.reset()
 };
 
-initialCards.forEach((item) => cardDisplay(gallery, cardGenerate(item), false)); //заполнение страницы
+initialCards.forEach((item) => displayCard(gallery, generateCard(item), false)); //заполнение страницы
 
 
 editButton.addEventListener("click", openProf); //для открытия
