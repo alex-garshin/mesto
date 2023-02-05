@@ -1,0 +1,15 @@
+.popup__error {
+  margin: 0;
+  padding: 0;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 15px;
+  color: #ff0000;
+  display: block;
+  visibility: hidden;
+  width: 100%;
+  word-wrap: break-word;
+  min-height: 30px;
+}

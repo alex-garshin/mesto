@@ -2,13 +2,17 @@ const popupProf = document.querySelector(".popup_click_prof"); //попап пр
 const profileName = document.querySelector(".profile__name"); //имя
 const profileJob = document.querySelector(".profile__job"); //профессия
 const formPopup = popupProf.querySelector(".popup__form"); //форма попапа
+const popupProfInput = formPopup.querySelector(".popup__input"); //поле ввода профиля
+const profButton = formPopup.querySelector(".popup__button"); //кнопка профиля
 const inputName = document.querySelector(".popup__input_click_name"); //поле ввода имени
 const inputJob = document.querySelector(".popup__input_click_job"); //поле ввода профессии
 const editButton = document.querySelector(".profile__edit-button"); //кнопка редактирования профиля попап
-const closeButtonProfil = document.querySelector(".popup__close_profile"); //кнопка закрытия попапа
+const closeButtonProfil = document.querySelector(".popup__close_profile"); //кнопка закрытия попапа ghjabkz
 const popupCard = document.querySelector(".popup_click_card"); //попап добавление картинки
 const gallery = document.querySelector(".gallery"); //галерея
 const formPopupImg = popupCard.querySelector(".popup__form"); //форма попапа
+const cardInput = formPopupImg.querySelectorAll(".popup__input"); //поле ввода добавления
+const cardButton = formPopupImg.querySelector(".popup__button"); //кнопка добавления
 const inputNameImg = document.querySelector(".popup__input_card_name"); //поле ввода имени
 const inputLink = document.querySelector(".popup__input_card_link"); //поле ввода ссылки
 const addButton = document.querySelector(".profile__add-button"); //кнопка добавления картинок попапа
@@ -51,15 +55,38 @@ const openProf = () => {
   openPopup(popupProf);
   inputName.value = profileName.textContent.trim(); //присваивание значения
   inputJob.value = profileJob.textContent.trim(); //присваивание значения
+  toggleButtonState(popupProfInput, profButton, popupValidate);
 };
+
+const openCard = () => {
+  openPopup(popupCard);
+  toggleButtonState(cardInput, cardButton, popupValidate);
+}
 
 const closePopup = (clickPopup) => {
   clickPopup.classList.remove("popup_opened");
+  document.removeEventListener('keydown', processEscape);
+    clickPopup.removeEventListener('click', processClick);
 };
 
 const openPopup = (clickPopup) => {
   clickPopup.classList.add("popup_opened");
+  document.addEventListener('keydown', processEscape);
+  clickPopup.addEventListener('click', processClick);
 };
+
+const processEscape = (event) => {
+  if (event.key === 'Escape') {
+      const clickPopup = document.querySelector('.popup_opened');
+      closePopup(clickPopup);
+  }
+}
+
+const processClick = (event) => {
+  if (event.target === event.currentTarget) {
+      closePopup(event.currentTarget);
+  }
+}
 
 const processProfile = (event) => {
   const clickPopup = event.target.closest(".popup");
@@ -68,8 +95,6 @@ const processProfile = (event) => {
   profileJob.textContent = inputJob.value; //редактирование
   closePopup(clickPopup);
 };
-
-
 
 const fillCard = (event) => {
   openPopup(popupImg);
@@ -128,7 +153,7 @@ initialCards.forEach((item) => displayCard(gallery, generateCard(item), false));
 
 
 editButton.addEventListener("click", openProf); //для открытия
-addButton.addEventListener("click", () => { openPopup(popupCard);}); //для открытия
+addButton.addEventListener("click", openCard); //для открытия
 closeButtonProfil.addEventListener("click", () => { closePopup(popupProf)}); //для закрытия
 closeButtonCard.addEventListener("click", () => { closePopup(popupCard)}); //для закрытия
 closeButtonImg.addEventListener("click", () => { closePopup(popupImg);}); //для закрытия

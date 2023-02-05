@@ -82,7 +82,13 @@
 
 @import url(../blocks/popup/__input/_click/popup__input_click_job.css);
 
-@import url(../blocks/popup/__input/_click/popup__input_click_name);
+@import url(../blocks/popup/__input/_click/popup__input_click_name.css);
+
+@import url(../blocks/popup/__input/_click/popup__input_click_error.css);
+
+@import url(../blocks/popup/__input/_click/popup__input_card_name.css);
+
+@import url(../blocks/popup/__input/_click/popup__input_card_link.css);
 
 @import url(../blocks/popup/_opened/popup_opened.css);
 
@@ -103,3 +109,9 @@
 @import url(../blocks/popup/__close/_profile/popup__close_profile.css);
 
 @import url(../blocks/popup/__text/popup__text.css);
+
+@import url(../blocks/popup/__error/popup__error.css);
+
+@import url(../blocks/popup/__button/_blocked/popup__button_blocked.css);
+
+@import url(../blocks/popup/__error/_visible/popup__error_visible.css);
