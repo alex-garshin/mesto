@@ -28,7 +28,7 @@ const setEventListener = (form, object) => {
   );
   inputList.forEach((input) => {
     input.addEventListener("input", () => {
-      checkValidity(form, input, object);
+      checkInputValidity(form, input, object);
     });
   });
 };
