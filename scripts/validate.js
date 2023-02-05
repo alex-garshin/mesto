@@ -33,7 +33,7 @@ const setEventListener = (form, object) => {
   });
 };
 
-const checkValidity = (form, input, object) => {
+const checkInputValidity = (form, input, object) => {
   const errorLink = document.querySelector(`.${input.dataset.error}`);
   if (!input.validity.valid) {
     input.classList.add(object.popupInputError);
