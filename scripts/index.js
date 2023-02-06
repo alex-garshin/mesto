@@ -96,13 +96,11 @@ const processProfile = (event) => {
   closePopup(clickPopup);
 };
 
-const fillCard = (event) => {
+const fillCard = (cards) => {
   openPopup(popupImg);
-  const link = event.target.closest(".gallery__card").querySelector(".gallery__pic").getAttribute("src");
-  const name = event.target.closest(".gallery__card").querySelector(".gallery__text").textContent;
-  popupImages.setAttribute("alt", name);
-  popupImages.setAttribute("src", link);
-  popupText.textContent = name;
+  popupImages.setAttribute("alt", cards.name);
+  popupImages.setAttribute("src", cards.link);
+  popupText.textContent = cards.name;
 };
 
 const generateCard = (array) => {
@@ -112,7 +110,7 @@ const generateCard = (array) => {
   const galleryImg = galleryCardArray.querySelector(".gallery__pic");
   galleryImg.setAttribute("alt", array.name);
   galleryImg.setAttribute("src", array.link);
-  galleryImg.addEventListener("click", fillCard);
+  galleryImg.addEventListener('click', () => { fillCard(cards) });
   const galleryName = galleryCardArray.querySelector(".gallery__text");
   galleryName.textContent = array.name;
   const galleryDelete = galleryCardArray.querySelector(".gallery__delete");
@@ -130,8 +128,8 @@ const likeImage = (event) => {
   event.target.classList.toggle("gallery__like_active");
 };
 
-const displayCard = (cardBox, cardItem, card = false) => {
-  if (card) {
+const displayCard = (cardBox, cardItem, isPrepend = false) => {
+  if (isPrepend) {
   cardBox.prepend(cardItem);
   } else {
   cardBox.append(cardItem);
