@@ -17,7 +17,7 @@ const inputNameImg = document.querySelector(".popup__input_card_name"); //пол
 const inputLink = document.querySelector(".popup__input_card_link"); //поле ввода ссылки
 const addButton = document.querySelector(".profile__add-button"); //кнопка добавления картинок попапа
 const closeButtonCard = document.querySelector(".popup__close_card"); //кнопка закрытия попапа
-const galleryArray = document.querySelector(".gallery__array").content; //заполнение картинок через массив 
+const galleryArray = document.querySelector(".gallery__array").content; //заполнение картинок через массив
 const popupImg = document.querySelector(".popup_click_img"); //попап картинка
 const popupImages = popupImg.querySelector(".popup__img"); //картинка
 const popupText = popupImg.querySelector(".popup__text"); //текст
@@ -61,32 +61,32 @@ const openProf = () => {
 const openCard = () => {
   openPopup(popupCard);
   toggleButtonState(cardInput, cardButton, popupValidate);
-}
+};
 
 const closePopup = (clickPopup) => {
   clickPopup.classList.remove("popup_opened");
-  document.removeEventListener('keydown', processEscape);
-    clickPopup.removeEventListener('click', processClick);
+  document.removeEventListener("keydown", processEscape);
+  clickPopup.removeEventListener("click", processClick);
 };
 
 const openPopup = (clickPopup) => {
   clickPopup.classList.add("popup_opened");
-  document.addEventListener('keydown', processEscape);
-  clickPopup.addEventListener('click', processClick);
+  document.addEventListener("keydown", processEscape);
+  clickPopup.addEventListener("click", processClick);
 };
 
 const processEscape = (event) => {
-  if (event.key === 'Escape') {
-      const clickPopup = document.querySelector('.popup_opened');
-      closePopup(clickPopup);
+  if (event.key === "Escape") {
+    const clickPopup = document.querySelector(".popup_opened");
+    closePopup(clickPopup);
   }
-}
+};
 
 const processClick = (event) => {
   if (event.target === event.currentTarget) {
-      closePopup(event.currentTarget);
+    closePopup(event.currentTarget);
   }
-}
+};
 
 const processProfile = (event) => {
   const clickPopup = event.target.closest(".popup");
@@ -103,16 +103,18 @@ const fillCard = (cards) => {
   popupText.textContent = cards.name;
 };
 
-const generateCard = (array) => {
+const generateCard = (cardObj) => {
   const galleryCardArray = galleryArray
-  .querySelector(".gallery__card")
-  .cloneNode(true);
+    .querySelector(".gallery__card")
+    .cloneNode(true);
   const galleryImg = galleryCardArray.querySelector(".gallery__pic");
-  galleryImg.setAttribute("alt", array.name);
-  galleryImg.setAttribute("src", array.link);
-  galleryImg.addEventListener('click', () => { fillCard(cards) });
+  galleryImg.setAttribute("alt", cardObj.name);
+  galleryImg.setAttribute("src", cardObj.link);
+  galleryImg.addEventListener("click", () => {
+    fillCard(cardObj);
+  });
   const galleryName = galleryCardArray.querySelector(".gallery__text");
-  galleryName.textContent = array.name;
+  galleryName.textContent = cardObj.name;
   const galleryDelete = galleryCardArray.querySelector(".gallery__delete");
   galleryDelete.addEventListener("click", deleteImage);
   const galleryLike = galleryCardArray.querySelector(".gallery__like");
@@ -130,9 +132,9 @@ const likeImage = (event) => {
 
 const displayCard = (cardBox, cardItem, isPrepend = false) => {
   if (isPrepend) {
-  cardBox.prepend(cardItem);
+    cardBox.prepend(cardItem);
   } else {
-  cardBox.append(cardItem);
+    cardBox.append(cardItem);
   }
 };
 
@@ -140,20 +142,25 @@ const processCard = (event) => {
   const clickPopup = event.target.closest(".popup");
   event.preventDefault(); //откат без изменений
   if (inputNameImg.value !== "" && inputLink.value !== "") {
-  const completCard = { name: inputNameImg.value, link: inputLink.value };
-  displayCard(gallery, generateCard(completCard), true);
+    const completCard = { name: inputNameImg.value, link: inputLink.value };
+    displayCard(gallery, generateCard(completCard), true);
   }
   closePopup(clickPopup);
-  event.target.reset()
+  event.target.reset();
 };
 
 initialCards.forEach((item) => displayCard(gallery, generateCard(item), false)); //заполнение страницы
 
-
 editButton.addEventListener("click", openProf); //для открытия
 addButton.addEventListener("click", openCard); //для открытия
-closeButtonProfil.addEventListener("click", () => { closePopup(popupProf)}); //для закрытия
-closeButtonCard.addEventListener("click", () => { closePopup(popupCard)}); //для закрытия
-closeButtonImg.addEventListener("click", () => { closePopup(popupImg);}); //для закрытия
+closeButtonProfil.addEventListener("click", () => {
+  closePopup(popupProf);
+}); //для закрытия
+closeButtonCard.addEventListener("click", () => {
+  closePopup(popupCard);
+}); //для закрытия
+closeButtonImg.addEventListener("click", () => {
+  closePopup(popupImg);
+}); //для закрытия
 formPopup.addEventListener("submit", processProfile); //для отправки
 formPopupImg.addEventListener("submit", processCard); //для отправки
