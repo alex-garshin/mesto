@@ -1,3 +1,5 @@
+import { Card } from "./card.js";
+import { FormValidator } from "./FormValidator.js";
 const popupProf = document.querySelector(".popup_click_prof"); //попап профиль
 const profileName = document.querySelector(".profile__name"); //имя
 const profileJob = document.querySelector(".profile__job"); //профессия
@@ -17,11 +19,18 @@ const inputNameImg = document.querySelector(".popup__input_card_name"); //пол
 const inputLink = document.querySelector(".popup__input_card_link"); //поле ввода ссылки
 const addButton = document.querySelector(".profile__add-button"); //кнопка добавления картинок попапа
 const closeButtonCard = document.querySelector(".popup__close_card"); //кнопка закрытия попапа
-const galleryArray = document.querySelector(".gallery__array").content; //заполнение картинок через массив
-const popupImg = document.querySelector(".popup_click_img"); //попап картинка
-const popupImages = popupImg.querySelector(".popup__img"); //картинка
-const popupText = popupImg.querySelector(".popup__text"); //текст
 const closeButtonImg = document.querySelector(".popup__close_img"); //кнопка закрытия попапа
+export const popupImg = document.querySelector(".popup_click_img"); //попап картинка
+export const popupImages = popupImg.querySelector(".popup__img"); //картинка
+export const popupText = popupImg.querySelector(".popup__text"); //текст
+
+const popupValidate = {
+  popupInputValidate: ".popup__input",
+  popupButtonValidate: ".popup__button",
+  popupInputError: "popup__input_click_error",
+  popupButtonBlocked: "popup__button_blocked",
+  popupError: "popup__error_visible",
+};
 
 //массив картинок
 const initialCards = [
@@ -51,16 +60,19 @@ const initialCards = [
   },
 ];
 
+const validatorForm = new FormValidator(popupValidate, ".popup__form");
+validatorForm.enableValidation();
+
 const openProf = () => {
   openPopup(popupProf);
   inputName.value = profileName.textContent.trim(); //присваивание значения
   inputJob.value = profileJob.textContent.trim(); //присваивание значения
-  toggleButtonState(popupProfInput, profButton, popupValidate);
+  validatorForm.toggleButtonState(popupProfInput, profButton, popupValidate);
 };
 
 const openCard = () => {
   openPopup(popupCard);
-  toggleButtonState(cardInput, cardButton, popupValidate);
+  validatorForm.toggleButtonState(cardInput, cardButton, popupValidate);
 };
 
 const closePopup = (clickPopup) => {
@@ -69,7 +81,7 @@ const closePopup = (clickPopup) => {
   clickPopup.removeEventListener("click", processClick);
 };
 
-const openPopup = (clickPopup) => {
+export const openPopup = (clickPopup) => {
   clickPopup.classList.add("popup_opened");
   document.addEventListener("keydown", processEscape);
   clickPopup.addEventListener("click", processClick);
@@ -96,40 +108,6 @@ const processProfile = (event) => {
   closePopup(clickPopup);
 };
 
-const fillCard = (cards) => {
-  openPopup(popupImg);
-  popupImages.setAttribute("alt", cards.name);
-  popupImages.setAttribute("src", cards.link);
-  popupText.textContent = cards.name;
-};
-
-const generateCard = (cardObj) => {
-  const galleryCardArray = galleryArray
-    .querySelector(".gallery__card")
-    .cloneNode(true);
-  const galleryImg = galleryCardArray.querySelector(".gallery__pic");
-  galleryImg.setAttribute("alt", cardObj.name);
-  galleryImg.setAttribute("src", cardObj.link);
-  galleryImg.addEventListener("click", () => {
-    fillCard(cardObj);
-  });
-  const galleryName = galleryCardArray.querySelector(".gallery__text");
-  galleryName.textContent = cardObj.name;
-  const galleryDelete = galleryCardArray.querySelector(".gallery__delete");
-  galleryDelete.addEventListener("click", deleteImage);
-  const galleryLike = galleryCardArray.querySelector(".gallery__like");
-  galleryLike.addEventListener("click", likeImage);
-  return galleryCardArray;
-};
-
-const deleteImage = (event) => {
-  event.target.closest(".gallery__card").remove();
-};
-
-const likeImage = (event) => {
-  event.target.classList.toggle("gallery__like_active");
-};
-
 const displayCard = (cardBox, cardItem, isPrepend = false) => {
   if (isPrepend) {
     cardBox.prepend(cardItem);
@@ -143,13 +121,19 @@ const processCard = (event) => {
   event.preventDefault(); //откат без изменений
   if (inputNameImg.value !== "" && inputLink.value !== "") {
     const completCard = { name: inputNameImg.value, link: inputLink.value };
-    displayCard(gallery, generateCard(completCard), true);
+    displayCard(
+      gallery,
+      new Card(completCard, ".gallery__array").generateCard(),
+      true
+    );
   }
   closePopup(clickPopup);
   event.target.reset();
 };
 
-initialCards.forEach((item) => displayCard(gallery, generateCard(item), false)); //заполнение страницы
+initialCards.forEach((item) =>
+  displayCard(gallery, new Card(item, ".gallery__array").generateCard(), false)
+); //заполнение страницы
 
 editButton.addEventListener("click", openProf); //для открытия
 addButton.addEventListener("click", openCard); //для открытия
