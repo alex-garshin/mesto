@@ -1,4 +1,4 @@
-import { Card } from "./card.js";
+import { Card } from "./Сard.js";
 import { FormValidator } from "./FormValidator.js";
 const popupProf = document.querySelector(".popup_click_prof"); //попап профиль
 const profileName = document.querySelector(".profile__name"); //имя
@@ -60,39 +60,51 @@ const initialCards = [
   },
 ];
 
-const validatorForm = new FormValidator(popupValidate, ".popup__form");
-validatorForm.enableValidation();
+const formsValidatorWrapper = () => {
+  const validatorFormAdd = new FormValidator(popupValidate, ".popup__form_add");
+  const validatorFormEdit = new FormValidator(
+    popupValidate,
+    ".popup__form_edit"
+  );
+
+  validatorFormAdd.enableValidation();
+  validatorFormEdit.enableValidation();
+
+  return { validatorFormAdd, validatorFormEdit };
+};
+
+const { validatorFormAdd, validatorFormEdit } = formsValidatorWrapper();
 
 const openProf = () => {
   openPopup(popupProf);
   inputName.value = profileName.textContent.trim(); //присваивание значения
   inputJob.value = profileJob.textContent.trim(); //присваивание значения
-  validatorForm.toggleButtonState(popupProfInput, profButton, popupValidate);
+  validatorFormEdit.toggleButtonState();
 };
 
 const openCard = () => {
   openPopup(popupCard);
-  validatorForm.toggleButtonState(cardInput, cardButton, popupValidate);
+  validatorFormAdd.toggleButtonState();
 };
 
-const closePopup = (clickPopup) => {
-  clickPopup.classList.remove("popup_opened");
-  document.removeEventListener("keydown", processEscape);
-  clickPopup.removeEventListener("click", processClick);
+const closePopup = (popupClick) => {
+  popupClick.classList.remove("popup_opened");
+  popupClick.removeEventListener("click", processClick);
 };
 
-export const openPopup = (clickPopup) => {
-  clickPopup.classList.add("popup_opened");
-  document.addEventListener("keydown", processEscape);
-  clickPopup.addEventListener("click", processClick);
+export const openPopup = (popupClick) => {
+  popupClick.classList.add("popup_opened");
+  popupClick.addEventListener("click", processClick);
 };
 
-const processEscape = (event) => {
+function processEscape(event) {
   if (event.key === "Escape") {
-    const clickPopup = document.querySelector(".popup_opened");
-    closePopup(clickPopup);
+    const popupClick = document.querySelector(".popup_opened");
+    if (popupClick) {
+      closePopup(popupClick);
+    }
   }
-};
+}
 
 const processClick = (event) => {
   if (event.target === event.currentTarget) {
@@ -101,39 +113,35 @@ const processClick = (event) => {
 };
 
 const processProfile = (event) => {
-  const clickPopup = event.target.closest(".popup");
   event.preventDefault(); //откат без изменений
   profileName.textContent = inputName.value; //редактирование
   profileJob.textContent = inputJob.value; //редактирование
-  closePopup(clickPopup);
+  closePopup(popupProf);
 };
 
-const displayCard = (cardBox, cardItem, isPrepend = false) => {
-  if (isPrepend) {
-    cardBox.prepend(cardItem);
-  } else {
-    cardBox.append(cardItem);
-  }
+const displayPrependedCard = (cardBox, cardItem) => {
+  cardBox.prepend(cardItem);
+};
+
+const displayAppendedCard = (cardBox, cardItem) => {
+  cardBox.append(cardItem);
+};
+
+const createCard = (cardData) => {
+  return new Card(cardData, ".gallery__array").generateCard();
 };
 
 const processCard = (event) => {
-  const clickPopup = event.target.closest(".popup");
   event.preventDefault(); //откат без изменений
-  if (inputNameImg.value !== "" && inputLink.value !== "") {
-    const completCard = { name: inputNameImg.value, link: inputLink.value };
-    displayCard(
-      gallery,
-      new Card(completCard, ".gallery__array").generateCard(),
-      true
-    );
-  }
-  closePopup(clickPopup);
+
+  const completCard = { name: inputNameImg.value, link: inputLink.value };
+  displayPrependedCard(gallery, createCard(completCard));
+
+  closePopup(popupCard);
   event.target.reset();
 };
 
-initialCards.forEach((item) =>
-  displayCard(gallery, new Card(item, ".gallery__array").generateCard(), false)
-); //заполнение страницы
+initialCards.forEach((item) => displayAppendedCard(gallery, createCard(item))); //заполнение страницы
 
 editButton.addEventListener("click", openProf); //для открытия
 addButton.addEventListener("click", openCard); //для открытия
@@ -148,3 +156,4 @@ closeButtonImg.addEventListener("click", () => {
 }); //для закрытия
 formPopup.addEventListener("submit", processProfile); //для отправки
 formPopupImg.addEventListener("submit", processCard); //для отправки
+document.addEventListener("keydown", processEscape);

@@ -52,7 +52,11 @@
             class="popup__close popup__close_profile"
             type="button"
           ></button>
-          <form class="popup__form" name="popup-form" novalidate>
+          <form
+            class="popup__form popup__form_edit"
+            name="popup-form"
+            novalidate
+          >
             <input
               class="popup__input popup__input_click_name"
               type="text"
@@ -64,7 +68,7 @@
               data-error="input-error-prof-name"
               required
             />
-            <span class="popup__error input-error-prof-name"></span>
+            <span class="popup__error input-prof-name-error"></span>
             <input
               class="popup__input popup__input_click_job"
               type="text"
@@ -76,7 +80,7 @@
               data-error="input-error-prof-job"
               required
             />
-            <span class="popup__error input-error-prof-job"></span>
+            <span class="popup__error input-prof-job-error"></span>
             <button class="popup__button" type="submit">Сохранить</button>
           </form>
         </div>
@@ -85,7 +89,7 @@
         <div class="popup__content">
           <h2 class="popup__title">Новое место</h2>
           <button class="popup__close popup__close_card" type="button"></button>
-          <form class="popup__form" name="new-card" novalidate>
+          <form class="popup__form popup__form_add" name="new-card" novalidate>
             <input
               class="popup__input popup__input_card_name"
               type="text"
@@ -94,20 +98,18 @@
               minlength="2"
               maxlength="30"
               id="input-card-name"
-              data-error="input-error-card-name"
               required
             />
-            <span class="popup__error input-error-card-name"></span>
+            <span class="popup__error input-card-name-error"></span>
             <input
               class="popup__input popup__input_card_link"
               type="url"
               name="img-link"
               placeholder="Ссылка на картинку"
               id="input-card-link"
-              data-error="input-error-card-link"
               required
             />
-            <span class="popup__error input-error-card-link"></span>
+            <span class="popup__error input-card-link-error"></span>
             <button class="popup__button" type="submit">Создать</button>
           </form>
         </div>

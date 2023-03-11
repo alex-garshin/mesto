@@ -4,23 +4,22 @@ export class Card {
   constructor(pic, cardsContainerPattern) {
     this._name = pic.name;
     this._link = pic.link;
-    this._galleryCardArray = document
+    this._galleryCard = document
       .querySelector(cardsContainerPattern)
       .content.querySelector(".gallery__card");
   }
 
   generateCard() {
-    this._galleryCardArray = this._pushGalleryArray(this._galleryCardArray);
-    this._galleryImg = this._galleryCardArray.querySelector(".gallery__pic");
+    this._galleryCard = this._pushGalleryArray(this._galleryCard);
+    this._galleryImg = this._galleryCard.querySelector(".gallery__pic");
     this._galleryImg.setAttribute("alt", this._name);
     this._galleryImg.setAttribute("src", this._link);
-    this._galleryName = this._galleryCardArray.querySelector(".gallery__text");
+    this._galleryName = this._galleryCard.querySelector(".gallery__text");
     this._galleryName.textContent = this._name;
-    this._galleryDelete =
-      this._galleryCardArray.querySelector(".gallery__delete");
-    this._galleryLike = this._galleryCardArray.querySelector(".gallery__like");
+    this._galleryDelete = this._galleryCard.querySelector(".gallery__delete");
+    this._galleryLike = this._galleryCard.querySelector(".gallery__like");
     this._addEventListeners();
-    return this._galleryCardArray;
+    return this._galleryCard;
   }
 
   _fillCard = (name, link) => {
@@ -43,11 +42,12 @@ export class Card {
     this._galleryLike.addEventListener("click", this._likeImage);
   }
 
-  _deleteImage = (event) => {
-    event.target.closest(".gallery__card").remove();
+  _deleteImage = () => {
+    this._galleryCard.remove();
+    this._galleryCard = null;
   };
 
-  _likeImage = (event) => {
-    event.target.classList.toggle("gallery__like_active");
+  _likeImage = () => {
+    this._galleryLike.classList.toggle("gallery__like_active");
   };
 }
