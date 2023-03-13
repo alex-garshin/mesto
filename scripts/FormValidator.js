@@ -21,10 +21,12 @@ export class FormValidator {
 
   _setEventListener = () => {
     this._inputList = Array.from(
-      this._form.querySelectorAll(this._obj.popupInputValidate)
+      this._formElement.querySelectorAll(this._obj.popupInputValidate)
     );
 
-    this._buttonElement = this._form.querySelector(".popup__button");
+    this._buttonElement = this._formElement.querySelector(
+      this._obj.popupButtonValidate
+    );
 
     this.toggleButtonState();
 
@@ -37,19 +39,19 @@ export class FormValidator {
   };
 
   _showInputError = (inputElement, errorMessage) => {
-    inputElement.classList.add("popup__input_click_error");
+    inputElement.classList.add(this._obj.popupInputError);
     this._errorElement.textContent = errorMessage;
-    this._errorElement.classList.add("popup__error_visible");
+    this._errorElement.classList.add(this._obj.popupError);
   };
 
   _hideInputError = (inputElement) => {
-    inputElement.classList.remove("popup__input_click_error");
-    this._errorElement.classList.remove("popup__error_visible");
+    inputElement.classList.remove(this._obj.popupInputError);
+    this._errorElement.classList.remove(this._obj.popupError);
     this._errorElement.textContent = "";
   };
 
   _checkInputValidity = (input) => {
-    this._errorElement = this._form.querySelector(`.${input.id}-error`);
+    this._errorElement = this._formElement.querySelector(`.${input.id}-error`);
 
     if (!input.validity.valid) {
       this._showInputError(input, input.validationMessage);
@@ -59,7 +61,6 @@ export class FormValidator {
   };
 
   enableValidation = () => {
-    this._form = document.querySelector(this._formElement);
     this._setEventListener();
   };
 }
