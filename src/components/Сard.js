@@ -9,7 +9,7 @@ export class Card {
   }
 
   generateCard() {
-    this._galleryCard = this._pushGalleryArray(this._galleryCard);
+    this._galleryCard = this._getCardTemplate(this._galleryCard);
     this._galleryImg = this._galleryCard.querySelector(".gallery__pic");
     this._galleryImg.setAttribute("alt", this._name);
     this._galleryImg.setAttribute("src", this._link);
@@ -21,7 +21,7 @@ export class Card {
     return this._galleryCard;
   }
 
-  _pushGalleryArray(container) {
+  _getCardTemplate(container) {
     const galleryArray = container.cloneNode(true);
     return galleryArray;
   }
@@ -31,7 +31,7 @@ export class Card {
       this._handleCardClick(this._name, this._link);
     });
     this._galleryDelete.addEventListener("click", this._deleteImage);
-    this._galleryLike.addEventListener("click", this._likeImage);
+    this._galleryLike.addEventListener("click", this._toggleLike);
   }
 
   _deleteImage = () => {
@@ -39,7 +39,7 @@ export class Card {
     this._galleryCard = null;
   };
 
-  _likeImage = () => {
+  _toggleLike = () => {
     this._galleryLike.classList.toggle("gallery__like_active");
   };
 }
