@@ -1,26 +1,20 @@
 import { Card } from "./Сard.js";
 import { FormValidator } from "./FormValidator.js";
-export const popupImg = document.querySelector(".popup_click_img"); //попап картинка
-export const popupImages = popupImg.querySelector(".popup__img"); //картинка
-export const popupText = popupImg.querySelector(".popup__text"); //текст
-const popupProf = document.querySelector(".popup_click_prof"); //попап профиль
-const profileName = document.querySelector(".profile__name"); //имя
-const profileJob = document.querySelector(".profile__job"); //профессия
-const formPopup = popupProf.querySelector(".popup__form"); //форма попапа
+import { Section } from "./Section.js";
+import { UserInfo } from "./UserInfo.js";
+import { PopupWithForm } from "./PopupWithForm.js";
+import { PopupWithImage } from "./PopupWithImage.js";
 const inputName = document.querySelector(".popup__input_click_name"); //поле ввода имени
 const inputJob = document.querySelector(".popup__input_click_job"); //поле ввода профессии
 const editButton = document.querySelector(".profile__edit-button"); //кнопка редактирования профиля попап
-const closeButtonProfil = document.querySelector(".popup__close_profile"); //кнопка закрытия попапа ghjabkz
-const popupCard = document.querySelector(".popup_click_card"); //попап добавление картинки
-const gallery = document.querySelector(".gallery"); //галерея
-const formPopupImg = popupCard.querySelector(".popup__form"); //форма попапа
 const inputNameImg = document.querySelector(".popup__input_card_name"); //поле ввода имени
 const inputLink = document.querySelector(".popup__input_card_link"); //поле ввода ссылки
 const addButton = document.querySelector(".profile__add-button"); //кнопка добавления картинок попапа
-const closeButtonCard = document.querySelector(".popup__close_card"); //кнопка закрытия попапа
-const closeButtonImg = document.querySelector(".popup__close_img"); //кнопка закрытия попапа
 const formAdd = document.querySelector(".popup__form_add"); //форма добавления
 const formEdit = document.querySelector(".popup__form_edit"); //форма редактирования
+import avatar from "../images/avatar.png";
+import headerLogo from "../images/header-logo.png";
+import styles from "../pages/index.css";
 
 const popupValidate = {
   popupInputValidate: ".popup__input",
@@ -29,6 +23,17 @@ const popupValidate = {
   popupButtonBlocked: "popup__button_blocked",
   popupError: "popup__error_visible",
 };
+
+const setImages = () => {
+  document
+    .getElementsByClassName("header__logo")[0]
+    .setAttribute("src", headerLogo);
+  document
+    .getElementsByClassName("profile__avatar")[0]
+    .setAttribute("src", avatar);
+};
+
+setImages();
 
 //массив картинок
 const initialCards = [
@@ -58,6 +63,26 @@ const initialCards = [
   },
 ];
 
+const gallerySection = new Section(
+  {
+    items: initialCards,
+    renderer: (img) => {
+      const newCard = createCard(img);
+      gallerySection.addItem(newCard);
+    },
+  },
+  ".gallery"
+);
+
+const profile = new UserInfo({
+  profileNameSelector: ".profile__name",
+  profileJobSelector: ".profile__job",
+});
+
+const popupProf = new PopupWithForm(".popup_click_prof", processProfile);
+const popupCard = new PopupWithForm(".popup_click_card", processCard);
+const popupImg = new PopupWithImage(".popup_click_img");
+
 const formsValidatorWrapper = () => {
   const validatorFormAdd = new FormValidator(popupValidate, formAdd);
   const validatorFormEdit = new FormValidator(popupValidate, formEdit);
@@ -71,84 +96,42 @@ const formsValidatorWrapper = () => {
 const { validatorFormAdd, validatorFormEdit } = formsValidatorWrapper();
 
 const openProf = () => {
-  openPopup(popupProf);
-  inputName.value = profileName.textContent.trim(); //присваивание значения
-  inputJob.value = profileJob.textContent.trim(); //присваивание значения
+  popupProf.open();
+  const { profileName: name, profileJob: job } = profile.getUserInfo();
+  inputName.value = name; //присваивание значения
+  inputJob.value = job; //присваивание значения
   validatorFormEdit.toggleButtonState();
 };
 
 const openCard = () => {
-  openPopup(popupCard);
+  popupCard.open();
   validatorFormAdd.toggleButtonState();
 };
 
-const closePopup = (popupClick) => {
-  document.removeEventListener("keydown", processEscape);
-  popupClick.classList.remove("popup_opened");
-};
-
-export const openPopup = (popupClick) => {
-  document.addEventListener("keydown", processEscape);
-  popupClick.classList.add("popup_opened");
-};
-
-function processEscape(event) {
-  if (event.key === "Escape") {
-    const popupClick = document.querySelector(".popup_opened");
-    closePopup(popupClick);
-  }
+function processProfile(formValues) {
+  profile.setUserInfo({
+    name: formValues[inputName.name],
+    job: formValues[inputJob.name],
+  });
 }
 
-const processClick = (event) => {
-  if (event.target === event.currentTarget) {
-    closePopup(event.currentTarget);
-  }
+const handleCardClick = (name, link) => {
+  popupImg.open(name, link);
 };
 
-const processProfile = (event) => {
-  event.preventDefault(); //откат без изменений
-  profileName.textContent = inputName.value; //редактирование
-  profileJob.textContent = inputJob.value; //редактирование
-  closePopup(popupProf);
-};
+function createCard(cardData) {
+  return new Card(cardData, ".gallery__array", handleCardClick).generateCard();
+}
 
-const displayPrependedCard = (cardBox, cardItem) => {
-  cardBox.prepend(cardItem);
-};
+function processCard(formValues) {
+  const completCard = {
+    name: formValues[inputNameImg.name],
+    link: formValues[inputLink.name],
+  };
+  gallerySection.addItem(createCard(completCard));
+}
 
-const displayAppendedCard = (cardBox, cardItem) => {
-  cardBox.append(cardItem);
-};
-
-const createCard = (cardData) => {
-  return new Card(cardData, ".gallery__array").generateCard();
-};
-
-const processCard = (event) => {
-  event.preventDefault(); //откат без изменений
-
-  const completCard = { name: inputNameImg.value, link: inputLink.value };
-  displayPrependedCard(gallery, createCard(completCard));
-
-  closePopup(popupCard);
-  event.target.reset();
-};
-
-initialCards.forEach((item) => displayAppendedCard(gallery, createCard(item))); //заполнение страницы
+gallerySection.renderItems();
 
 editButton.addEventListener("click", openProf); //для открытия
 addButton.addEventListener("click", openCard); //для открытия
-closeButtonProfil.addEventListener("click", () => {
-  closePopup(popupProf);
-}); //для закрытия
-closeButtonCard.addEventListener("click", () => {
-  closePopup(popupCard);
-}); //для закрытия
-closeButtonImg.addEventListener("click", () => {
-  closePopup(popupImg);
-}); //для закрытия
-formPopup.addEventListener("submit", processProfile); //для отправки
-formPopupImg.addEventListener("submit", processCard); //для отправки
-popupCard.addEventListener("click", processClick);
-popupProf.addEventListener("click", processClick);
-popupImg.addEventListener("click", processClick);
