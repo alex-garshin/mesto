@@ -1,9 +1,9 @@
-import { Card } from "./Сard.js";
-import { FormValidator } from "./FormValidator.js";
-import { Section } from "./Section.js";
-import { UserInfo } from "./UserInfo.js";
-import { PopupWithForm } from "./PopupWithForm.js";
-import { PopupWithImage } from "./PopupWithImage.js";
+import { Card } from "../components/Сard.js";
+import { FormValidator } from "../components/FormValidator.js";
+import { Section } from "../components/Section.js";
+import { UserInfo } from "../components/UserInfo.js";
+import { PopupWithForm } from "../components/PopupWithForm.js";
+import { PopupWithImage } from "../components/PopupWithImage.js";
 const inputName = document.querySelector(".popup__input_click_name"); //поле ввода имени
 const inputJob = document.querySelector(".popup__input_click_job"); //поле ввода профессии
 const editButton = document.querySelector(".profile__edit-button"); //кнопка редактирования профиля попап
@@ -14,7 +14,7 @@ const formAdd = document.querySelector(".popup__form_add"); //форма доб�
 const formEdit = document.querySelector(".popup__form_edit"); //форма редактирования
 import avatar from "../images/avatar.png";
 import headerLogo from "../images/header-logo.png";
-import styles from "../pages/index.css";
+import styles from "./index.css";
 
 const popupValidate = {
   popupInputValidate: ".popup__input",
