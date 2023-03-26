@@ -4,27 +4,3 @@
   height: 120px;
   object-fit: cover;
 }
-
-.avatar__container {
-  position: relative;
-}
-
-.avatar__overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 120px;
-  height: 120px;
-}
-
-.avatar__overlay:hover {
-  background-image: url(../../../images/pen.png);
-  background-color: rgba(0, 0, 0, 0.5);
-  background-position: center;
-  background-repeat: no-repeat;
-  cursor: pointer;
-}
-
-.avatar__change {
-  display: none;
-}

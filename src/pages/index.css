@@ -40,6 +40,12 @@
 
 @import url(../blocks/profile/__add-button/profile__add-button.css);
 
+@import url(../blocks/profile/__avatar-change/profile__avatar-change.css);
+
+@import url(../blocks/profile/__avatar-container/profile__avatar-container.css);
+
+@import url(../blocks/profile/__avatar-overlay/profile__avatar-overlay.css);
+
 /* gallery */
 
 @import url(../blocks/gallery/gallery.css);
