@@ -4,6 +4,8 @@ import { Section } from "../components/Section.js";
 import { UserInfo } from "../components/UserInfo.js";
 import { PopupWithForm } from "../components/PopupWithForm.js";
 import { PopupWithImage } from "../components/PopupWithImage.js";
+import { PopupWithConfirmation } from "../components/PopupWithConfirmation.js";
+import { Api } from "../components/Api.js";
 const inputName = document.querySelector(".popup__input_click_name"); //поле ввода имени
 const inputJob = document.querySelector(".popup__input_click_job"); //поле ввода профессии
 const editButton = document.querySelector(".profile__edit-button"); //кнопка редактирования профиля попап
@@ -24,6 +26,14 @@ const popupValidate = {
   popupError: "popup__error_visible",
 };
 
+export const api = new Api({
+  baseUrl: "https://mesto.nomoreparties.co/v1/cohort-61",
+  headers: {
+    authorization: "96420521-2cf3-4ce8-a5f9-6a7817778898",
+    "Content-Type": "application/json",
+  },
+});
+
 const setImages = () => {
   document
     .getElementsByClassName("header__logo")[0]
@@ -35,53 +45,85 @@ const setImages = () => {
 
 setImages();
 
-//массив картинок
-const initialCards = [
-  {
-    name: "Архыз",
-    link: "https://pictures.s3.yandex.net/frontend-developer/cards-compressed/arkhyz.jpg",
-  },
-  {
-    name: "Челябинская область",
-    link: "https://pictures.s3.yandex.net/frontend-developer/cards-compressed/chelyabinsk-oblast.jpg",
-  },
-  {
-    name: "Иваново",
-    link: "https://pictures.s3.yandex.net/frontend-developer/cards-compressed/ivanovo.jpg",
-  },
-  {
-    name: "Камчатка",
-    link: "https://pictures.s3.yandex.net/frontend-developer/cards-compressed/kamchatka.jpg",
-  },
-  {
-    name: "Холмогорский район",
-    link: "https://pictures.s3.yandex.net/frontend-developer/cards-compressed/kholmogorsky-rayon.jpg",
-  },
-  {
-    name: "Байкал",
-    link: "https://pictures.s3.yandex.net/frontend-developer/cards-compressed/baikal.jpg",
-  },
-];
-
-const gallerySection = new Section(
-  {
-    items: initialCards,
-    renderer: (img) => {
-      const newCard = createCard(img);
-      gallerySection.addItem(newCard);
-    },
-  },
-  ".gallery"
-);
-
 const profile = new UserInfo({
   profileNameSelector: ".profile__name",
   profileJobSelector: ".profile__job",
+  profileAvatarSelector: ".profile__avatar",
 });
+
+let myProfile;
+profile
+  .fetchUserData()
+  .then((data) => {
+    profile.setUserInfo();
+    myProfile = data;
+  })
+  .catch((err) => {
+    console.log(err); // выведем ошибку в консоль
+  });
+
+let gallerySection;
+const renderSection = (data, profile) => {
+  gallerySection = new Section(
+    {
+      items: data.map((item) => ({
+        name: item.name,
+        link: item.link,
+        id: item["_id"],
+        likes: item.likes,
+        owner: item.owner,
+        isLiked: !!item.likes.find((like) => {
+          return like["_id"] === profile["_id"];
+        }),
+        isOwner: item.owner["_id"] === profile["_id"],
+      })),
+      renderer: (img) => {
+        const newCard = createCard(img);
+        gallerySection.addItem(newCard);
+      },
+    },
+    ".gallery"
+  );
+  gallerySection.renderItems();
+};
+
+const generateSection = async () => {
+  const currentUser = await profile.fetchUserData();
+  api
+    .getInitialCards()
+    .then(async (data) => {
+      renderSection(data, currentUser);
+    })
+    .catch((err) => {
+      console.log(err); // выведем ошибку в консоль
+    });
+};
+
+generateSection();
+
+const handleCardDelete = async (card, cardData) => {
+  console.log(card, cardData);
+  if (cardData.owner["_id"] === myProfile["_id"]) {
+    api.deleteCard(cardData.id);
+    card.remove();
+  }
+};
 
 const popupProf = new PopupWithForm(".popup_click_prof", processProfile);
 const popupCard = new PopupWithForm(".popup_click_card", processCard);
 const popupImg = new PopupWithImage(".popup_click_img");
+const popupDelete = new PopupWithConfirmation(
+  ".popup_click_delete",
+  handleCardDelete
+);
+const popupEditAvatar = new PopupWithForm(
+  ".popup_click_avatar",
+  processEditAvatar
+);
+
+export const openDeletePopup = (card, cardData) => {
+  popupDelete.open(card, cardData);
+};
 
 const formsValidatorWrapper = () => {
   const validatorFormAdd = new FormValidator(popupValidate, formAdd);
@@ -109,7 +151,16 @@ const openCard = () => {
 };
 
 function processProfile(formValues) {
-  profile.setUserInfo({
+  popupProf.isLoading("Сохранение...");
+  api
+    .editProfile({
+      name: formValues[inputName.name],
+      about: formValues[inputJob.name],
+    })
+    .finally(() => {
+      popupProf.isLoading();
+    });
+  profile.setUserInfoForm({
     name: formValues[inputName.name],
     job: formValues[inputJob.name],
   });
@@ -124,14 +175,44 @@ function createCard(cardData) {
 }
 
 function processCard(formValues) {
-  const completCard = {
-    name: formValues[inputNameImg.name],
-    link: formValues[inputLink.name],
-  };
-  gallerySection.addItem(createCard(completCard));
+  popupCard.isLoading("Сохранение...");
+  api
+    .addNewCard({ name: formValues.name, link: formValues["img-link"] })
+    .then((data) => {
+      gallerySection?.addItem(createCard({ id: data["_id"], ...data }));
+      generateSection();
+    })
+    .catch((err) => {
+      console.log(err); // выведем ошибку в консоль
+    })
+    .finally(() => {
+      popupCard.isLoading();
+    });
 }
 
-gallerySection.renderItems();
+const avatarButton = document.querySelector(".avatar__container");
 
+const openEditAvatar = () => {
+  popupEditAvatar.open();
+};
+
+function processEditAvatar(formValues) {
+  popupEditAvatar.isLoading("Сохранение...");
+  api
+    .editAvatar({ avatar: formValues["avatar-link"] })
+    .then(() => {
+      document
+        .querySelector(".profile__avatar")
+        .setAttribute("src", formValues["avatar-link"]);
+    })
+    .catch((err) => {
+      console.log(err); // выведем ошибку в консоль
+    })
+    .finally(() => {
+      popupEditAvatar.isLoading();
+    });
+}
+
+avatarButton.addEventListener("click", openEditAvatar);
 editButton.addEventListener("click", openProf); //для открытия
 addButton.addEventListener("click", openCard); //для открытия

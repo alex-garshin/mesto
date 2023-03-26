@@ -1,7 +1,6 @@
 .gallery__like {
   width: 22px;
   height: 19px;
-  margin-right: 20px;
   border: none;
   background-color: transparent;
   background-image: url(../../../images/Group.svg);
@@ -12,4 +11,20 @@
 .gallery__like:hover {
   opacity: 0.5;
   cursor: pointer;
+}
+
+.gallery__like-count {
+  display: flex;
+  flex-direction: column;
+  margin-right: 20px;
+  row-gap: 3px;
+  align-items: center;
+}
+
+.gallery__like-counter {
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 16px;
+  text-align: center;
+  color: #000000;
 }

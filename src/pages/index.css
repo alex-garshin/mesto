@@ -58,6 +58,8 @@
 
 @import url(../blocks/gallery/__like/_active/gallery__like_active.css);
 
+@import url(../blocks/gallery/__delete/_disable/gallery__delete_disable.css);
+
 /* footer */
 
 @import url(../blocks/footer/footer.css);
@@ -115,3 +117,5 @@
 @import url(../blocks/popup/__button/_blocked/popup__button_blocked.css);
 
 @import url(../blocks/popup/__error/_visible/popup__error_visible.css);
+
+@import url(../blocks/popup/__title-delete/popup__title-delete.css);
