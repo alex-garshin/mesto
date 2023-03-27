@@ -1,4 +1,4 @@
-.avatar__overlay {
+.profile__avatar-overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -6,7 +6,7 @@
   height: 120px;
 }
 
-.avatar__overlay:hover {
+.profile__avatar-overlay:hover {
   background-image: url(../../../images/pen.png);
   background-color: rgba(0, 0, 0, 0.5);
   background-position: center;
