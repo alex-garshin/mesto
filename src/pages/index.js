@@ -190,7 +190,7 @@ function processCard(formValues) {
     });
 }
 
-const avatarButton = document.querySelector(".avatar__container");
+const avatarButton = document.querySelector(".profile__avatar-container");
 
 const openEditAvatar = () => {
   popupEditAvatar.open();
