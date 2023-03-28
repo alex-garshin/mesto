@@ -1,4 +1,5 @@
-import { api, openDeletePopup } from "../pages";
+import { openDeletePopup } from "../pages";
+import { api } from "../utils/constants";
 
 export class Card {
   constructor(pic, cardsContainerPattern, handleCardClick) {
@@ -7,8 +8,11 @@ export class Card {
     this._id = pic.id;
     this._likes = pic.likes;
     this._owner = pic.owner;
-    this._isLike = pic.isLiked;
-    this._isOwner = pic.isOwner;
+    this._profileId = pic.profileId;
+    this._isLike = this._likes.find((like) => {
+      return like["_id"] === this._profileId;
+    });
+    this._isOwner = this._owner["_id"] === this._profileId;
     this._galleryCard = document
       .querySelector(cardsContainerPattern)
       .content.querySelector(".gallery__card");
@@ -61,15 +65,27 @@ export class Card {
 
   _toggleLike = () => {
     if (this._isLike) {
-      api.deleteLikeCard(this._id);
-      this._galleryLikesCounter.textContent =
-        Number(this._galleryLikesCounter.textContent) - 1;
+      api
+        .deleteLikeCard(this._id)
+        .then((data) => {
+          this._galleryLike.classList.toggle("gallery__like_active");
+          this._galleryLikesCounter.textContent = data.likes.length;
+          this._isLike = false;
+        })
+        .catch((e) => {
+          throw new Error(e);
+        });
     } else {
-      api.likeCard(this._id);
-      this._galleryLikesCounter.textContent =
-        Number(this._galleryLikesCounter.textContent) + 1;
+      api
+        .likeCard(this._id)
+        .then((data) => {
+          this._galleryLike.classList.toggle("gallery__like_active");
+          this._galleryLikesCounter.textContent = data.likes.length;
+          this._isLike = true;
+        })
+        .catch((e) => {
+          throw new Error(e);
+        });
     }
-
-    this._galleryLike.classList.toggle("gallery__like_active");
   };
 }

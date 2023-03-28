@@ -125,3 +125,5 @@
 @import url(../blocks/popup/__error/_visible/popup__error_visible.css);
 
 @import url(../blocks/popup/__title-delete/popup__title-delete.css);
+
+@import url(../blocks/popup/_click/img/popup_click_img.css);

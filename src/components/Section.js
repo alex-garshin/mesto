@@ -10,20 +10,17 @@ export class Section {
     this._container.prepend(element);
   }
 
+  addItemAppend(element) {
+    this._container.append(element);
+  }
+
   getItems() {
     return this._initialArray;
   }
 
-  setItems(items) {
-    return new Section({ items, renderer: this._renderer }, this._selector);
-  }
-
   renderItems() {
-    this._initialArray
-      .slice(0)
-      .reverse()
-      .forEach((item) => {
-        this._renderer(item);
-      });
+    this._initialArray.forEach((item) => {
+      this._renderer(item);
+    });
   }
 }

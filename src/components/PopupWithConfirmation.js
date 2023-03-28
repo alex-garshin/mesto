@@ -5,8 +5,9 @@ export class PopupWithConfirmation extends PopupWithForm {
     super(selector, handleFormSubmit);
     this._processSubmit = (evt) => {
       evt.preventDefault();
-      handleFormSubmit(this._card, this._cardData);
-      this.close();
+      handleFormSubmit(this._card, this._cardData).then(() => {
+        this.close();
+      });
     };
   }
 

@@ -5,62 +5,22 @@ import { UserInfo } from "../components/UserInfo.js";
 import { PopupWithForm } from "../components/PopupWithForm.js";
 import { PopupWithImage } from "../components/PopupWithImage.js";
 import { PopupWithConfirmation } from "../components/PopupWithConfirmation.js";
-import { Api } from "../components/Api.js";
-const inputName = document.querySelector(".popup__input_click_name"); //поле ввода имени
-const inputJob = document.querySelector(".popup__input_click_job"); //поле ввода профессии
-const editButton = document.querySelector(".profile__edit-button"); //кнопка редактирования профиля попап
-const inputNameImg = document.querySelector(".popup__input_card_name"); //поле ввода имени
-const inputLink = document.querySelector(".popup__input_card_link"); //поле ввода ссылки
-const addButton = document.querySelector(".profile__add-button"); //кнопка добавления картинок попапа
-const formAdd = document.querySelector(".popup__form_add"); //форма добавления
-const formEdit = document.querySelector(".popup__form_edit"); //форма редактирования
-import avatar from "../images/avatar.png";
-import headerLogo from "../images/header-logo.png";
+import {
+  inputName,
+  inputJob,
+  editButton,
+  addButton,
+  formAdd,
+  formEdit,
+  formAvatar,
+  popupValidate,
+  api,
+  setImages,
+  avatarButton,
+} from "../utils/constants.js";
 import styles from "./index.css";
 
-const popupValidate = {
-  popupInputValidate: ".popup__input",
-  popupButtonValidate: ".popup__button",
-  popupInputError: "popup__input_click_error",
-  popupButtonBlocked: "popup__button_blocked",
-  popupError: "popup__error_visible",
-};
-
-export const api = new Api({
-  baseUrl: "https://mesto.nomoreparties.co/v1/cohort-61",
-  headers: {
-    authorization: "96420521-2cf3-4ce8-a5f9-6a7817778898",
-    "Content-Type": "application/json",
-  },
-});
-
-const setImages = () => {
-  document
-    .getElementsByClassName("header__logo")[0]
-    .setAttribute("src", headerLogo);
-  document
-    .getElementsByClassName("profile__avatar")[0]
-    .setAttribute("src", avatar);
-};
-
 setImages();
-
-const profile = new UserInfo({
-  profileNameSelector: ".profile__name",
-  profileJobSelector: ".profile__job",
-  profileAvatarSelector: ".profile__avatar",
-});
-
-let myProfile;
-profile
-  .fetchUserData()
-  .then((data) => {
-    profile.setUserInfo();
-    myProfile = data;
-  })
-  .catch((err) => {
-    console.log(err); // выведем ошибку в консоль
-  });
 
 let gallerySection;
 const renderSection = (data, profile) => {
@@ -72,14 +32,12 @@ const renderSection = (data, profile) => {
         id: item["_id"],
         likes: item.likes,
         owner: item.owner,
-        isLiked: !!item.likes.find((like) => {
-          return like["_id"] === profile["_id"];
-        }),
+        profileId: profile["_id"],
         isOwner: item.owner["_id"] === profile["_id"],
       })),
       renderer: (img) => {
         const newCard = createCard(img);
-        gallerySection.addItem(newCard);
+        gallerySection.addItemAppend(newCard);
       },
     },
     ".gallery"
@@ -87,26 +45,58 @@ const renderSection = (data, profile) => {
   gallerySection.renderItems();
 };
 
-const generateSection = async () => {
-  const currentUser = await profile.fetchUserData();
+const generateSection = (user) => {
   api
     .getInitialCards()
-    .then(async (data) => {
-      renderSection(data, currentUser);
+    .then((data) => {
+      renderSection(data, user);
     })
     .catch((err) => {
       console.log(err); // выведем ошибку в консоль
     });
 };
 
-generateSection();
+const profile = new UserInfo({
+  profileNameSelector: ".profile__name",
+  profileJobSelector: ".profile__job",
+  profileAvatarSelector: ".profile__avatar",
+});
 
-const handleCardDelete = async (card, cardData) => {
-  console.log(card, cardData);
-  if (cardData.owner["_id"] === myProfile["_id"]) {
-    api.deleteCard(cardData.id);
-    card.remove();
-  }
+const fetchUserData = () => {
+  return api
+    .getUserInfo()
+    .then((data) => {
+      profile._profileName = data.name;
+      profile._profileJob = data.about;
+      profile._profileAvatar = data.avatar;
+
+      return data;
+    })
+    .catch((e) => {
+      throw new Error("Ошибка получения данных пользователя");
+    });
+};
+
+let myProfile;
+fetchUserData()
+  .then((data) => {
+    generateSection(data);
+    profile.setUserInfo();
+    myProfile = data;
+  })
+  .catch((err) => {
+    console.log(err); // выведем ошибку в консоль
+  });
+
+const handleCardDelete = (card, cardData) => {
+  return api
+    .deleteCard(cardData.id)
+    .then(() => {
+      card.remove();
+    })
+    .catch((e) => {
+      throw new Error(e);
+    });
 };
 
 const popupProf = new PopupWithForm(".popup_click_prof", processProfile);
@@ -116,9 +106,9 @@ const popupDelete = new PopupWithConfirmation(
   ".popup_click_delete",
   handleCardDelete
 );
-const popupEditAvatar = new PopupWithForm(
+export const popupEditAvatar = new PopupWithForm(
   ".popup_click_avatar",
-  processEditAvatar
+  profile.editAvatar
 );
 
 export const openDeletePopup = (card, cardData) => {
@@ -128,14 +118,17 @@ export const openDeletePopup = (card, cardData) => {
 const formsValidatorWrapper = () => {
   const validatorFormAdd = new FormValidator(popupValidate, formAdd);
   const validatorFormEdit = new FormValidator(popupValidate, formEdit);
+  const validatorFormAvatar = new FormValidator(popupValidate, formAvatar);
 
   validatorFormAdd.enableValidation();
   validatorFormEdit.enableValidation();
+  validatorFormAvatar.enableValidation();
 
-  return { validatorFormAdd, validatorFormEdit };
+  return { validatorFormAdd, validatorFormEdit, validatorFormAvatar };
 };
 
-const { validatorFormAdd, validatorFormEdit } = formsValidatorWrapper();
+const { validatorFormAdd, validatorFormEdit, validatorFormAvatar } =
+  formsValidatorWrapper();
 
 const openProf = () => {
   popupProf.open();
@@ -152,18 +145,23 @@ const openCard = () => {
 
 function processProfile(formValues) {
   popupProf.isLoading("Сохранение...");
-  api
+  return api
     .editProfile({
       name: formValues[inputName.name],
       about: formValues[inputJob.name],
     })
+    .then(() => {
+      profile.setUserInfoForm({
+        name: formValues[inputName.name],
+        job: formValues[inputJob.name],
+      });
+    })
+    .catch(() => {
+      popupProf.isLoading();
+    })
     .finally(() => {
       popupProf.isLoading();
     });
-  profile.setUserInfoForm({
-    name: formValues[inputName.name],
-    job: formValues[inputJob.name],
-  });
 }
 
 const handleCardClick = (name, link) => {
@@ -176,42 +174,30 @@ function createCard(cardData) {
 
 function processCard(formValues) {
   popupCard.isLoading("Сохранение...");
-  api
+  return api
     .addNewCard({ name: formValues.name, link: formValues["img-link"] })
     .then((data) => {
-      gallerySection?.addItem(createCard({ id: data["_id"], ...data }));
-      generateSection();
+      gallerySection?.addItem(
+        createCard({
+          id: data["_id"],
+          profileId: myProfile["_id"],
+          ...data,
+        })
+      );
     })
     .catch((err) => {
       console.log(err); // выведем ошибку в консоль
+      popupCard.isLoading();
     })
     .finally(() => {
       popupCard.isLoading();
     });
 }
 
-const avatarButton = document.querySelector(".profile__avatar-container");
-
 const openEditAvatar = () => {
   popupEditAvatar.open();
+  validatorFormAvatar.toggleButtonState();
 };
-
-function processEditAvatar(formValues) {
-  popupEditAvatar.isLoading("Сохранение...");
-  api
-    .editAvatar({ avatar: formValues["avatar-link"] })
-    .then(() => {
-      document
-        .querySelector(".profile__avatar")
-        .setAttribute("src", formValues["avatar-link"]);
-    })
-    .catch((err) => {
-      console.log(err); // выведем ошибку в консоль
-    })
-    .finally(() => {
-      popupEditAvatar.isLoading();
-    });
-}
 
 avatarButton.addEventListener("click", openEditAvatar);
 editButton.addEventListener("click", openProf); //для открытия
