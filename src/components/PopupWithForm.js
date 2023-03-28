@@ -10,8 +10,9 @@ export class PopupWithForm extends Popup {
 
     this._processSubmit = (evt) => {
       evt.preventDefault();
-      processSubmit(this._getInputValues());
-      this.close();
+      processSubmit(this._getInputValues()).then(() => {
+        this.close();
+      });
     };
   }
 

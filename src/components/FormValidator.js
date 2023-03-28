@@ -52,7 +52,6 @@ export class FormValidator {
 
   _checkInputValidity = (input) => {
     this._errorElement = this._formElement.querySelector(`.${input.id}-error`);
-
     if (!input.validity.valid) {
       this._showInputError(input, input.validationMessage);
     } else {

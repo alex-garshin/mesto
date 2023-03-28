@@ -1,4 +1,5 @@
-import { api } from "../pages";
+import { api } from "../utils/constants";
+import { popupEditAvatar } from "../pages";
 
 export class UserInfo {
   constructor({
@@ -10,21 +11,6 @@ export class UserInfo {
     this._profileJobSelector = document.querySelector(profileJobSelector);
     this._profileAvatarSelector = document.querySelector(profileAvatarSelector);
   }
-
-  fetchUserData = () => {
-    return api
-      .getUserInfo()
-      .then((data) => {
-        this._profileName = data.name;
-        this._profileJob = data.about;
-        this._profileAvatar = data.avatar;
-
-        return data;
-      })
-      .catch((e) => {
-        throw new Error("Ошибка получения данных пользователя");
-      });
-  };
 
   getUserInfo() {
     return {
@@ -45,5 +31,23 @@ export class UserInfo {
 
     this._profileNameSelector.textContent = this._profileName;
     this._profileJobSelector.textContent = this._profileJob;
+  }
+
+  editAvatar(formValues) {
+    popupEditAvatar.isLoading("Сохранение...");
+    return api
+      .editAvatar({ avatar: formValues?.["avatar-link"] })
+      .then(() => {
+        document
+          .querySelector(".profile__avatar")
+          .setAttribute("src", formValues["avatar-link"]);
+      })
+      .catch((err) => {
+        console.log(err); // выведем ошибку в консоль
+        popupEditAvatar.isLoading();
+      })
+      .finally(() => {
+        popupEditAvatar.isLoading();
+      });
   }
 }
