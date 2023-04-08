@@ -32,11 +32,10 @@ const renderSection = (data, profile) => {
         id: item["_id"],
         likes: item.likes,
         owner: item.owner,
-        profileId: profile["_id"],
         isOwner: item.owner["_id"] === profile["_id"],
       })),
       renderer: (img) => {
-        const newCard = createCard(img);
+        const newCard = createCard({ profileId: profile["_id"], ...img });
         gallerySection.addItemAppend(newCard);
       },
     },
@@ -57,19 +56,21 @@ const generateSection = (user) => {
 };
 
 const profile = new UserInfo({
-  profileNameSelector: ".profile__name",
-  profileJobSelector: ".profile__job",
-  profileAvatarSelector: ".profile__avatar",
+  name: ".profile__name",
+  job: ".profile__job",
+  avatar: ".profile__avatar",
 });
 
 const fetchUserData = () => {
   return api
     .getUserInfo()
     .then((data) => {
-      profile._profileName = data.name;
-      profile._profileJob = data.about;
-      profile._profileAvatar = data.avatar;
-
+      generateSection(data);
+      profile.setUserInfo({
+        name: data.name,
+        job: data.about,
+        avatar: data.avatar,
+      });
       return data;
     })
     .catch((e) => {
@@ -77,20 +78,18 @@ const fetchUserData = () => {
     });
 };
 
-let myProfile;
+let userId;
 fetchUserData()
   .then((data) => {
-    generateSection(data);
-    profile.setUserInfo();
-    myProfile = data;
+    userId = data["_id"];
   })
   .catch((err) => {
     console.log(err); // выведем ошибку в консоль
   });
 
-const handleCardDelete = (card, cardData) => {
+const handleCardDelete = (card, cardId) => {
   return api
-    .deleteCard(cardData.id)
+    .deleteCard(cardId)
     .then(() => {
       card.remove();
     })
@@ -108,11 +107,61 @@ const popupDelete = new PopupWithConfirmation(
 );
 export const popupEditAvatar = new PopupWithForm(
   ".popup_click_avatar",
-  profile.editAvatar
+  editAvatar
 );
 
-export const openDeletePopup = (card, cardData) => {
-  popupDelete.open(card, cardData);
+function editAvatar(formValues) {
+  popupEditAvatar.isLoading("Сохранение...");
+  return api
+    .editAvatar({ avatar: formValues?.["avatar-link"] })
+    .then((data) => {
+      profile.editAvatar(data.avatar);
+    })
+    .catch((err) => {
+      console.log(err); // выведем ошибку в консоль
+      popupEditAvatar.isLoading();
+    })
+    .finally(() => {
+      popupEditAvatar.isLoading();
+    });
+}
+
+function handleChangeLikes({ type, card }) {
+  if (type === "liked") {
+    disLikeCard(card);
+  }
+
+  if (type === "disLiked") {
+    likeCard(card);
+  }
+}
+
+function likeCard(card) {
+  api
+    .likeCard(card._id)
+    .then((data) => {
+      card.changeLikesCounter(data.likes);
+      card.addLike();
+    })
+    .catch((e) => {
+      console.log(e);
+    });
+}
+
+function disLikeCard(card) {
+  api
+    .deleteLikeCard(card._id)
+    .then((data) => {
+      card.changeLikesCounter(data.likes);
+      card.removeLike();
+    })
+    .catch((e) => {
+      console.log(e);
+    });
+}
+
+export const openDeletePopup = (card, cardId) => {
+  popupDelete.open(card, cardId);
 };
 
 const formsValidatorWrapper = () => {
@@ -132,7 +181,7 @@ const { validatorFormAdd, validatorFormEdit, validatorFormAvatar } =
 
 const openProf = () => {
   popupProf.open();
-  const { profileName: name, profileJob: job } = profile.getUserInfo();
+  const { name, job } = profile.getUserInfo();
   inputName.value = name; //присваивание значения
   inputJob.value = job; //присваивание значения
   validatorFormEdit.toggleButtonState();
@@ -150,14 +199,16 @@ function processProfile(formValues) {
       name: formValues[inputName.name],
       about: formValues[inputJob.name],
     })
-    .then(() => {
-      profile.setUserInfoForm({
-        name: formValues[inputName.name],
-        job: formValues[inputJob.name],
+    .then((data) => {
+      const userInfo = profile.getUserInfo();
+      profile.setUserInfo({
+        name: data.name,
+        job: data.about,
+        avatar: userInfo.avatar,
       });
     })
-    .catch(() => {
-      popupProf.isLoading();
+    .catch((e) => {
+      console.log(e);
     })
     .finally(() => {
       popupProf.isLoading();
@@ -169,7 +220,13 @@ const handleCardClick = (name, link) => {
 };
 
 function createCard(cardData) {
-  return new Card(cardData, ".gallery__array", handleCardClick).generateCard();
+  return new Card(
+    cardData,
+    ".gallery__array",
+    handleCardClick,
+    handleChangeLikes,
+    cardData.profileId
+  ).generateCard();
 }
 
 function processCard(formValues) {
@@ -180,14 +237,13 @@ function processCard(formValues) {
       gallerySection?.addItem(
         createCard({
           id: data["_id"],
-          profileId: myProfile["_id"],
+          profileId: userId,
           ...data,
         })
       );
     })
     .catch((err) => {
       console.log(err); // выведем ошибку в консоль
-      popupCard.isLoading();
     })
     .finally(() => {
       popupCard.isLoading();
