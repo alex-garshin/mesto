@@ -24,9 +24,9 @@ export const popupValidate = {
 };
 
 export const api = new Api({
-  baseUrl: "https://mesto.nomoreparties.co/v1/cohort-61",
+  baseUrl: "https://mesto.nomoreparties.co/v1/cohort-62",
   headers: {
-    authorization: "96420521-2cf3-4ce8-a5f9-6a7817778898",
+    authorization: "78542652-31c8-4469-a72b-b4b9aeed68be",
     "Content-Type": "application/json",
   },
 });

@@ -1,14 +1,19 @@
 import { openDeletePopup } from "../pages";
-import { api } from "../utils/constants";
 
 export class Card {
-  constructor(pic, cardsContainerPattern, handleCardClick) {
+  constructor(
+    pic,
+    cardsContainerPattern,
+    handleCardClick,
+    handleChangeLikes,
+    userId
+  ) {
     this._name = pic.name;
     this._link = pic.link;
     this._id = pic.id;
     this._likes = pic.likes;
     this._owner = pic.owner;
-    this._profileId = pic.profileId;
+    this._profileId = userId;
     this._isLike = this._likes.find((like) => {
       return like["_id"] === this._profileId;
     });
@@ -17,6 +22,7 @@ export class Card {
       .querySelector(cardsContainerPattern)
       .content.querySelector(".gallery__card");
     this._handleCardClick = handleCardClick;
+    this._handleChangeLikes = handleChangeLikes;
   }
 
   generateCard() {
@@ -53,9 +59,14 @@ export class Card {
       this._handleCardClick(this._name, this._link);
     });
     this._galleryDelete.addEventListener("click", () =>
-      openDeletePopup(this._galleryCard, { id: this._id, owner: this._owner })
+      openDeletePopup(this._galleryCard, this._id)
     );
-    this._galleryLike.addEventListener("click", this._toggleLike);
+    this._galleryLike.addEventListener("click", () =>
+      this._handleChangeLikes({
+        type: this._isLike ? "liked" : "disLiked",
+        card: this,
+      })
+    );
   }
 
   _deleteImage = () => {
@@ -63,29 +74,16 @@ export class Card {
     this._galleryCard = null;
   };
 
-  _toggleLike = () => {
-    if (this._isLike) {
-      api
-        .deleteLikeCard(this._id)
-        .then((data) => {
-          this._galleryLike.classList.toggle("gallery__like_active");
-          this._galleryLikesCounter.textContent = data.likes.length;
-          this._isLike = false;
-        })
-        .catch((e) => {
-          throw new Error(e);
-        });
-    } else {
-      api
-        .likeCard(this._id)
-        .then((data) => {
-          this._galleryLike.classList.toggle("gallery__like_active");
-          this._galleryLikesCounter.textContent = data.likes.length;
-          this._isLike = true;
-        })
-        .catch((e) => {
-          throw new Error(e);
-        });
-    }
+  changeLikesCounter = (likes) => {
+    this._galleryLike.classList.toggle("gallery__like_active");
+    this._galleryLikesCounter.textContent = likes.length;
+  };
+
+  addLike = () => {
+    this._isLike = true;
+  };
+
+  removeLike = () => {
+    this._isLike = false;
   };
 }

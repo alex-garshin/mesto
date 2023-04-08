@@ -1,53 +1,30 @@
-import { api } from "../utils/constants";
-import { popupEditAvatar } from "../pages";
-
 export class UserInfo {
-  constructor({
-    profileNameSelector,
-    profileJobSelector,
-    profileAvatarSelector,
-  }) {
-    this._profileNameSelector = document.querySelector(profileNameSelector);
-    this._profileJobSelector = document.querySelector(profileJobSelector);
-    this._profileAvatarSelector = document.querySelector(profileAvatarSelector);
+  constructor({ name, job, avatar, id }) {
+    this._name = document.querySelector(name);
+    this._job = document.querySelector(job);
+    this._avatar = document.querySelector(avatar);
+    this._id = id;
+  }
+
+  getUserId() {
+    return this._id;
   }
 
   getUserInfo() {
     return {
-      profileName: this._profileName,
-      profileJob: this._profileJob,
+      name: this._name.textContent,
+      job: this._job.textContent,
+      avatar: this._avatar.getAttribute("src"),
     };
   }
 
-  setUserInfo() {
-    this._profileNameSelector.textContent = this._profileName;
-    this._profileJobSelector.textContent = this._profileJob;
-    this._profileAvatarSelector.setAttribute("src", this._profileAvatar);
+  setUserInfo({ name, job, avatar }) {
+    this._name.textContent = name;
+    this._job.textContent = job;
+    this._avatar.setAttribute("src", avatar);
   }
 
-  setUserInfoForm({ name, job }) {
-    this._profileName = name;
-    this._profileJob = job;
-
-    this._profileNameSelector.textContent = this._profileName;
-    this._profileJobSelector.textContent = this._profileJob;
-  }
-
-  editAvatar(formValues) {
-    popupEditAvatar.isLoading("Сохранение...");
-    return api
-      .editAvatar({ avatar: formValues?.["avatar-link"] })
-      .then(() => {
-        document
-          .querySelector(".profile__avatar")
-          .setAttribute("src", formValues["avatar-link"]);
-      })
-      .catch((err) => {
-        console.log(err); // выведем ошибку в консоль
-        popupEditAvatar.isLoading();
-      })
-      .finally(() => {
-        popupEditAvatar.isLoading();
-      });
+  editAvatar(avatarLink) {
+    document.querySelector(".profile__avatar").setAttribute("src", avatarLink);
   }
 }
