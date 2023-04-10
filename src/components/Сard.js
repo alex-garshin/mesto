@@ -1,19 +1,13 @@
 import { openDeletePopup } from "../pages";
 
 export class Card {
-  constructor(
-    pic,
-    cardsContainerPattern,
-    handleCardClick,
-    handleChangeLikes,
-    userId
-  ) {
+  constructor(pic, cardsContainerPattern, handleCardClick, handleChangeLikes) {
     this._name = pic.name;
     this._link = pic.link;
     this._id = pic.id;
     this._likes = pic.likes;
     this._owner = pic.owner;
-    this._profileId = userId;
+    this._profileId = pic.profileId;
     this._isLike = this._likes.find((like) => {
       return like["_id"] === this._profileId;
     });
@@ -59,7 +53,7 @@ export class Card {
       this._handleCardClick(this._name, this._link);
     });
     this._galleryDelete.addEventListener("click", () =>
-      openDeletePopup(this._galleryCard, this._id)
+      openDeletePopup(this, this._id)
     );
     this._galleryLike.addEventListener("click", () =>
       this._handleChangeLikes({
@@ -69,9 +63,9 @@ export class Card {
     );
   }
 
-  _deleteImage = () => {
-    this._galleryCard.remove();
-    this._galleryCard = null;
+  deleteImage = (card) => {
+    card.remove();
+    card = null;
   };
 
   changeLikesCounter = (likes) => {

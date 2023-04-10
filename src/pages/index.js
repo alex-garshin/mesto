@@ -22,8 +22,9 @@ import styles from "./index.css";
 
 setImages();
 
+let userId;
 let gallerySection;
-const renderSection = (data, profile) => {
+const renderSection = (data) => {
   gallerySection = new Section(
     {
       items: data.map((item) => ({
@@ -32,10 +33,10 @@ const renderSection = (data, profile) => {
         id: item["_id"],
         likes: item.likes,
         owner: item.owner,
-        isOwner: item.owner["_id"] === profile["_id"],
+        isOwner: item.owner["_id"] === userId,
       })),
       renderer: (img) => {
-        const newCard = createCard({ profileId: profile["_id"], ...img });
+        const newCard = createCard({ profileId: userId, ...img });
         gallerySection.addItemAppend(newCard);
       },
     },
@@ -44,11 +45,11 @@ const renderSection = (data, profile) => {
   gallerySection.renderItems();
 };
 
-const generateSection = (user) => {
+const generateSection = () => {
   api
     .getInitialCards()
     .then((data) => {
-      renderSection(data, user);
+      renderSection(data);
     })
     .catch((err) => {
       console.log(err); // выведем ошибку в консоль
@@ -65,7 +66,8 @@ const fetchUserData = () => {
   return api
     .getUserInfo()
     .then((data) => {
-      generateSection(data);
+      userId = data["_id"];
+      generateSection();
       profile.setUserInfo({
         name: data.name,
         job: data.about,
@@ -78,20 +80,16 @@ const fetchUserData = () => {
     });
 };
 
-let userId;
-fetchUserData()
-  .then((data) => {
-    userId = data["_id"];
-  })
-  .catch((err) => {
-    console.log(err); // выведем ошибку в консоль
-  });
+fetchUserData().catch((err) => {
+  console.log(err); // выведем ошибку в консоль
+});
 
 const handleCardDelete = (card, cardId) => {
-  return api
+  api
     .deleteCard(cardId)
     .then(() => {
-      card.remove();
+      card.deleteImage(card._galleryCard);
+      popupDelete.close();
     })
     .catch((e) => {
       throw new Error(e);
@@ -224,8 +222,7 @@ function createCard(cardData) {
     cardData,
     ".gallery__array",
     handleCardClick,
-    handleChangeLikes,
-    cardData.profileId
+    handleChangeLikes
   ).generateCard();
 }
 
