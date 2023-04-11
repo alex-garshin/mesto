@@ -25,6 +25,6 @@ export class UserInfo {
   }
 
   editAvatar(avatarLink) {
-    document.querySelector(".profile__avatar").setAttribute("src", avatarLink);
+    this._avatar.setAttribute("src", avatarLink);
   }
 }

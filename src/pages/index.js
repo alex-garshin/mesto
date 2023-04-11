@@ -108,12 +108,13 @@ export const popupEditAvatar = new PopupWithForm(
   editAvatar
 );
 
-function editAvatar(formValues) {
+function editAvatar(formValues, instance) {
   popupEditAvatar.isLoading("Сохранение...");
   return api
     .editAvatar({ avatar: formValues?.["avatar-link"] })
     .then((data) => {
       profile.editAvatar(data.avatar);
+      instance.close();
     })
     .catch((err) => {
       console.log(err); // выведем ошибку в консоль
@@ -190,9 +191,9 @@ const openCard = () => {
   validatorFormAdd.toggleButtonState();
 };
 
-function processProfile(formValues) {
+function processProfile(formValues, instance) {
   popupProf.isLoading("Сохранение...");
-  return api
+  api
     .editProfile({
       name: formValues[inputName.name],
       about: formValues[inputJob.name],
@@ -204,6 +205,7 @@ function processProfile(formValues) {
         job: data.about,
         avatar: userInfo.avatar,
       });
+      instance.close();
     })
     .catch((e) => {
       console.log(e);
@@ -226,7 +228,7 @@ function createCard(cardData) {
   ).generateCard();
 }
 
-function processCard(formValues) {
+function processCard(formValues, instance) {
   popupCard.isLoading("Сохранение...");
   return api
     .addNewCard({ name: formValues.name, link: formValues["img-link"] })
@@ -238,6 +240,7 @@ function processCard(formValues) {
           ...data,
         })
       );
+      instance.close();
     })
     .catch((err) => {
       console.log(err); // выведем ошибку в консоль
