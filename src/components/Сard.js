@@ -63,9 +63,9 @@ export class Card {
     );
   }
 
-  deleteImage = (card) => {
-    card.remove();
-    card = null;
+  deleteImage = () => {
+    this._galleryCard.remove();
+    this._galleryCard = null;
   };
 
   changeLikesCounter = (likes) => {
