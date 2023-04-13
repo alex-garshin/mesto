@@ -88,7 +88,7 @@ const handleCardDelete = (card, cardId) => {
   api
     .deleteCard(cardId)
     .then(() => {
-      card.deleteImage(card._galleryCard);
+      card.deleteImage();
       popupDelete.close();
     })
     .catch((e) => {
@@ -108,13 +108,13 @@ export const popupEditAvatar = new PopupWithForm(
   editAvatar
 );
 
-function editAvatar(formValues, instance) {
+function editAvatar(formValues) {
   popupEditAvatar.isLoading("Сохранение...");
   return api
     .editAvatar({ avatar: formValues?.["avatar-link"] })
     .then((data) => {
       profile.editAvatar(data.avatar);
-      instance.close();
+      popupEditAvatar.close();
     })
     .catch((err) => {
       console.log(err); // выведем ошибку в консоль
@@ -191,7 +191,7 @@ const openCard = () => {
   validatorFormAdd.toggleButtonState();
 };
 
-function processProfile(formValues, instance) {
+function processProfile(formValues) {
   popupProf.isLoading("Сохранение...");
   api
     .editProfile({
@@ -205,7 +205,7 @@ function processProfile(formValues, instance) {
         job: data.about,
         avatar: userInfo.avatar,
       });
-      instance.close();
+      popupProf.close();
     })
     .catch((e) => {
       console.log(e);
@@ -228,7 +228,7 @@ function createCard(cardData) {
   ).generateCard();
 }
 
-function processCard(formValues, instance) {
+function processCard(formValues) {
   popupCard.isLoading("Сохранение...");
   return api
     .addNewCard({ name: formValues.name, link: formValues["img-link"] })
@@ -240,7 +240,7 @@ function processCard(formValues, instance) {
           ...data,
         })
       );
-      instance.close();
+      popupCard.close();
     })
     .catch((err) => {
       console.log(err); // выведем ошибку в консоль

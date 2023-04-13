@@ -10,7 +10,7 @@ export class PopupWithForm extends Popup {
 
     this._processSubmit = (evt) => {
       evt.preventDefault();
-      processSubmit(this._getInputValues(), this);
+      processSubmit(this._getInputValues());
     };
   }
 
@@ -29,7 +29,6 @@ export class PopupWithForm extends Popup {
 
   close = () => {
     super.close();
-    this._form.removeEventListener("submit", this._processSubmit);
     this._form.reset();
   };
 
